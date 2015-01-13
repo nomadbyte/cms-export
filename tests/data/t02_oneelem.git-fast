@@ -1,0 +1,20 @@
+commit refs/heads/master
+mark :1
+committer HOMEUSER <homeuser> 1419721728 +0000
+data 22
+initial empty check-in
+deleteall
+
+blob
+mark :4
+data 10
+elem1.txt
+
+commit refs/heads/master
+mark :3
+committer HOMEUSER <homeuser> 1419721729 +0000
+data 25
+(elem1.txt;1):T02_oneElem
+from :1
+M 100644 :4 elem1.txt
+

@@ -1,0 +1,476 @@
+commit refs/heads/master
+mark :1
+committer HOMEUSER <homeuser> 1419721728 +0000
+data 22
+initial empty check-in
+deleteall
+
+blob
+mark :4
+data 10
+elem1.txt
+
+commit refs/heads/master
+mark :3
+committer HOMEUSER <homeuser> 1419721729 +0000
+data 25
+(elem1.txt;1):T02_oneElem
+from :1
+M 100644 :4 elem1.txt
+
+blob
+mark :6
+data 21
+elem1.txt
+T03_genTwo
+
+commit refs/heads/master
+mark :5
+committer HOMEUSER <homeuser> 1419721730 +0000
+data 24
+(elem1.txt;2):T03_genTwo
+from :3
+M 100644 :6 elem1.txt
+
+blob
+mark :8
+data 43
+elem1.txt
+T03_genTwo
+T04_oneElemMainline:1
+
+commit refs/heads/master
+mark :7
+committer HOMEUSER <homeuser> 1419721731 +0000
+data 35
+(elem1.txt;3):T04_oneElemMainline:1
+from :5
+M 100644 :8 elem1.txt
+
+blob
+mark :10
+data 65
+elem1.txt
+T03_genTwo
+T04_oneElemMainline:1
+T04_oneElemMainline:2
+
+commit refs/heads/master
+mark :9
+committer HOMEUSER <homeuser> 1419721733 +0000
+data 35
+(elem1.txt;4):T04_oneElemMainline:2
+from :7
+M 100644 :10 elem1.txt
+
+blob
+mark :12
+data 87
+elem1.txt
+T03_genTwo
+T04_oneElemMainline:1
+T04_oneElemMainline:2
+T04_oneElemMainline:3
+
+commit refs/heads/master
+mark :11
+committer HOMEUSER <homeuser> 1419721734 +0000
+data 35
+(elem1.txt;5):T04_oneElemMainline:3
+from :9
+M 100644 :12 elem1.txt
+
+blob
+mark :14
+data 104
+elem1.txt
+T03_genTwo
+T04_oneElemMainline:1
+T04_oneElemMainline:2
+T04_oneElemMainline:3
+T05_oneVariant_A
+
+commit refs/heads/var-(elem1.txt;5a)
+mark :57
+committer HOMEUSER <homeuser> 1419721734 +0000
+data 35
+(elem1.txt;5):T04_oneElemMainline:3
+from :1
+M 100644 :12 elem1.txt
+
+commit refs/heads/var-(elem1.txt;5a)
+mark :13
+committer HOMEUSER <homeuser> 1419721737 +0000
+data 32
+(elem1.txt;5A1):T05_oneVariant_A
+from :57
+M 100644 :14 elem1.txt
+
+blob
+mark :16
+data 127
+elem1.txt
+T03_genTwo
+T04_oneElemMainline:1
+T04_oneElemMainline:2
+T04_oneElemMainline:3
+T05_oneVariant_A
+T06_oneElemVarline_A:1
+
+commit refs/heads/var-(elem1.txt;5a)
+mark :15
+committer HOMEUSER <homeuser> 1419721740 +0000
+data 38
+(elem1.txt;5A2):T06_oneElemVarline_A:1
+from :13
+M 100644 :16 elem1.txt
+
+blob
+mark :18
+data 150
+elem1.txt
+T03_genTwo
+T04_oneElemMainline:1
+T04_oneElemMainline:2
+T04_oneElemMainline:3
+T05_oneVariant_A
+T06_oneElemVarline_A:1
+T06_oneElemVarline_A:2
+
+commit refs/heads/var-(elem1.txt;5a)
+mark :17
+committer HOMEUSER <homeuser> 1419721741 +0000
+data 38
+(elem1.txt;5A3):T06_oneElemVarline_A:2
+from :15
+M 100644 :18 elem1.txt
+
+blob
+mark :20
+data 173
+elem1.txt
+T03_genTwo
+T04_oneElemMainline:1
+T04_oneElemMainline:2
+T04_oneElemMainline:3
+T05_oneVariant_A
+T06_oneElemVarline_A:1
+T06_oneElemVarline_A:2
+T06_oneElemVarline_A:3
+
+commit refs/heads/var-(elem1.txt;5a)
+mark :19
+committer HOMEUSER <homeuser> 1419721743 +0000
+data 38
+(elem1.txt;5A4):T06_oneElemVarline_A:3
+from :17
+M 100644 :20 elem1.txt
+
+blob
+mark :22
+data 69
+elem1.txt
+T03_genTwo
+T04_oneElemMainline:1
+T07_oneElemManyVarlines:1
+
+commit refs/heads/var-(elem1.txt;3f)
+mark :59
+committer HOMEUSER <homeuser> 1419721731 +0000
+data 35
+(elem1.txt;3):T04_oneElemMainline:1
+from :1
+M 100644 :8 elem1.txt
+
+commit refs/heads/var-(elem1.txt;3f)
+mark :21
+committer HOMEUSER <homeuser> 1419721747 +0000
+data 41
+(elem1.txt;3F1):T07_oneElemManyVarlines:1
+from :59
+M 100644 :22 elem1.txt
+
+blob
+mark :24
+data 95
+elem1.txt
+T03_genTwo
+T04_oneElemMainline:1
+T07_oneElemManyVarlines:1
+T07_oneElemManyVarlines:2
+
+commit refs/heads/var-(elem1.txt;3f)
+mark :23
+committer HOMEUSER <homeuser> 1419721749 +0000
+data 41
+(elem1.txt;3F2):T07_oneElemManyVarlines:2
+from :21
+M 100644 :24 elem1.txt
+
+blob
+mark :26
+data 121
+elem1.txt
+T03_genTwo
+T04_oneElemMainline:1
+T07_oneElemManyVarlines:1
+T07_oneElemManyVarlines:2
+T07_oneElemManyVarlines:3
+
+commit refs/heads/var-(elem1.txt;3f)
+mark :25
+committer HOMEUSER <homeuser> 1419721750 +0000
+data 41
+(elem1.txt;3F3):T07_oneElemManyVarlines:3
+from :23
+M 100644 :26 elem1.txt
+
+blob
+mark :28
+data 113
+elem1.txt
+T03_genTwo
+T04_oneElemMainline:1
+T04_oneElemMainline:2
+T04_oneElemMainline:3
+T07_oneElemManyVarlines:4
+
+commit refs/heads/var-(elem1.txt;5t)
+mark :61
+committer HOMEUSER <homeuser> 1419721734 +0000
+data 35
+(elem1.txt;5):T04_oneElemMainline:3
+from :1
+M 100644 :12 elem1.txt
+
+commit refs/heads/var-(elem1.txt;5t)
+mark :27
+committer HOMEUSER <homeuser> 1419721751 +0000
+data 41
+(elem1.txt;5T1):T07_oneElemManyVarlines:4
+from :61
+M 100644 :28 elem1.txt
+
+blob
+mark :30
+data 139
+elem1.txt
+T03_genTwo
+T04_oneElemMainline:1
+T04_oneElemMainline:2
+T04_oneElemMainline:3
+T07_oneElemManyVarlines:4
+T07_oneElemManyVarlines:5
+
+commit refs/heads/var-(elem1.txt;5t)
+mark :29
+committer HOMEUSER <homeuser> 1419721753 +0000
+data 41
+(elem1.txt;5T2):T07_oneElemManyVarlines:5
+from :27
+M 100644 :30 elem1.txt
+
+blob
+mark :32
+data 165
+elem1.txt
+T03_genTwo
+T04_oneElemMainline:1
+T04_oneElemMainline:2
+T04_oneElemMainline:3
+T07_oneElemManyVarlines:4
+T07_oneElemManyVarlines:5
+T07_oneElemManyVarlines:6
+
+commit refs/heads/var-(elem1.txt;5t)
+mark :31
+committer HOMEUSER <homeuser> 1419721754 +0000
+data 41
+(elem1.txt;5T3):T07_oneElemManyVarlines:6
+from :29
+M 100644 :32 elem1.txt
+
+blob
+mark :34
+data 147
+elem1.txt
+T03_genTwo
+T04_oneElemMainline:1
+T07_oneElemManyVarlines:1
+T07_oneElemManyVarlines:2
+T07_oneElemManyVarlines:3
+T07_oneElemManyVarlines:7
+
+commit refs/heads/var-(elem1.txt;3f)
+mark :33
+committer HOMEUSER <homeuser> 1419721757 +0000
+data 41
+(elem1.txt;3F4):T07_oneElemManyVarlines:7
+from :25
+M 100644 :34 elem1.txt
+
+blob
+mark :36
+data 150
+elem1.txt
+T03_genTwo
+T04_oneElemMainline:1
+T04_oneElemMainline:2
+T04_oneElemMainline:3
+T05_oneVariant_A
+T06_oneElemVarline_A:1
+T08_variantVarline_V:1
+
+commit refs/heads/var-(elem1.txt;5a2v)
+mark :35
+committer HOMEUSER <homeuser> 1419721763 +0000
+data 40
+(elem1.txt;5A2V1):T08_variantVarline_V:1
+from :15
+M 100644 :36 elem1.txt
+
+blob
+mark :38
+data 173
+elem1.txt
+T03_genTwo
+T04_oneElemMainline:1
+T04_oneElemMainline:2
+T04_oneElemMainline:3
+T05_oneVariant_A
+T06_oneElemVarline_A:1
+T08_variantVarline_V:1
+T08_variantVarline_V:2
+
+commit refs/heads/var-(elem1.txt;5a2v)
+mark :37
+committer HOMEUSER <homeuser> 1419721765 +0000
+data 40
+(elem1.txt;5A2V2):T08_variantVarline_V:2
+from :35
+M 100644 :38 elem1.txt
+
+blob
+mark :40
+data 196
+elem1.txt
+T03_genTwo
+T04_oneElemMainline:1
+T04_oneElemMainline:2
+T04_oneElemMainline:3
+T05_oneVariant_A
+T06_oneElemVarline_A:1
+T08_variantVarline_V:1
+T08_variantVarline_V:2
+T08_variantVarline_V:3
+
+commit refs/heads/var-(elem1.txt;5a2v)
+mark :39
+committer HOMEUSER <homeuser> 1419721766 +0000
+data 40
+(elem1.txt;5A2V3):T08_variantVarline_V:3
+from :37
+M 100644 :40 elem1.txt
+
+blob
+mark :42
+data 10
+elem2.txt
+
+commit refs/heads/master
+mark :41
+committer HOMEUSER <homeuser> 1419721773 +0000
+data 27
+(elem2.txt;1):T09_manyElems
+from :11
+M 100644 :42 elem2.txt
+
+blob
+mark :44
+data 10
+elem3.txt
+
+commit refs/heads/master
+mark :43
+committer HOMEUSER <homeuser> 1419721775 +0000
+data 27
+(elem3.txt;1):T09_manyElems
+from :41
+M 100644 :44 elem3.txt
+
+blob
+mark :46
+data 111
+elem1.txt
+T03_genTwo
+T04_oneElemMainline:1
+T04_oneElemMainline:2
+T04_oneElemMainline:3
+T10_manyElemsMainline:1
+
+commit refs/heads/master
+mark :45
+committer HOMEUSER <homeuser> 1419721782 +0000
+data 37
+(elem1.txt;6):T10_manyElemsMainline:1
+from :43
+M 100644 :46 elem1.txt
+
+blob
+mark :48
+data 34
+elem2.txt
+T10_manyElemsMainline:1
+
+commit refs/heads/master
+mark :47
+committer HOMEUSER <homeuser> 1419721783 +0000
+data 37
+(elem2.txt;2):T10_manyElemsMainline:1
+from :45
+M 100644 :48 elem2.txt
+
+blob
+mark :50
+data 34
+elem3.txt
+T10_manyElemsMainline:1
+
+commit refs/heads/master
+mark :49
+committer HOMEUSER <homeuser> 1419721784 +0000
+data 37
+(elem3.txt;2):T10_manyElemsMainline:1
+from :47
+M 100644 :50 elem3.txt
+
+blob
+mark :52
+data 58
+elem3.txt
+T10_manyElemsMainline:1
+T10_manyElemsMainline:2
+
+commit refs/heads/master
+mark :51
+committer HOMEUSER <homeuser> 1419721786 +0000
+data 37
+(elem3.txt;3):T10_manyElemsMainline:2
+from :49
+M 100644 :52 elem3.txt
+
+blob
+mark :54
+data 58
+elem2.txt
+T10_manyElemsMainline:1
+T10_manyElemsMainline:3
+
+commit refs/heads/master
+mark :53
+committer HOMEUSER <homeuser> 1419721788 +0000
+data 37
+(elem2.txt;3):T10_manyElemsMainline:3
+from :51
+M 100644 :54 elem2.txt
+
