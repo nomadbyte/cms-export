@@ -2,9 +2,21 @@ cms-export ChangeLog  {#xcmschangelog}
 ====================
 
 
+## 0.9.0 - 2017-02-21
+
+- Update docs
+- Bugfixes
+- __ISSUE-FIX__:Multi-line generation/commit remarks break the export process.
+  - Commit remarks are truncated to a single line.
+
+- __ISSUE-FIX__:Blob byte-size is one block off when it's exact block multiple.
+
+
 ## 0.8.0 - 2015-01-13
 
 - Update docs
+- __ISSUE__:Multi-line generation/commit remarks break the export process.
+- __ISSUE__:Blob byte-size is one block off when it is exact block multiple.
 
 
 ## 0.7.0 - 2015-01-09

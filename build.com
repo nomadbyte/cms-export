@@ -256,12 +256,12 @@ Build utility for CMS-EXPORT project.
 
 DETAILS:
 - Supports building of a single target or a target list (space-separated)
-- Targets are done in the listed order left-to-right
+- Targets are made in the listed order left-to-right
 - Each target must have a corresponding GOSUB_DO_<target> to execute
 - Listed targets may be ordinary targets or target-groups
 - Target group is a target sub-list
-- For a target group: first all targets in the group are done,
-  then the group's own target is done
+- For a target group: first all targets in the group are made,
+  then the group's own target is made
 
 RETURNS:
 On successful completion of the requested targets $STATUS is set as:

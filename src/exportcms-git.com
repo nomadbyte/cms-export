@@ -2,7 +2,7 @@ $!===========================================================================
 $ THIS_FILE = f$elem(0,";",f$env("procedure"))
 $ USAGE_ARGS = "[libPath] [outFile] [elemList] [classList] [classBranchXref]"
 $ THIS_FACILITY = "EXPORTCMS"
-$ VERSION = "0.8.0"
+$ VERSION = "0.9.0"
 $ COPYRIGHT = "Copyright (c) 2015, Artur Shepilko, <cms-export@nomadbyte.com>."
 $!---------------------------------------------------------------------------
 $! For Usage -- run with ? (?? for usage details and license)
@@ -107,11 +107,23 @@ $   libPath = ""
 $   goto EXIT_GET_ARGS
 $ endif
 $
-$ libName =  f$edit(libPath,"LOWERCASE") - "]" -
-    - f$edit( f$parse(libPath - "]" + ".-]")  - "].;", "LOWERCASE" ) - "."
+$ !!-- Get CMS lib name from path (DEV:[LIBNAME] or DEV:[DIR.LIBNAME])
+$ !!-- OR get it from device name when a terminal device (DEV: or DEV:[000000])
+$ !!--
+$ if (libPath - "]" .eqs. libPath -
+      .or. libPath - "[000000]" .nes. libPath)
+$ then
+$   libDirName = f$edit(libPath, "LOWERCASE") - "[000000]" - ":"
+$ else
+$   libDirName = f$edit(libPath, "LOWERCASE") - "]" -
+         - f$edit(f$parse(libPath - "]" + ".-]",,,,"SYNTAX_ONLY") -
+           - "000000].;" - "].;", "LOWERCASE") - "000000." - "."
+$ endif
 $!
 $ expFile = p2
-$ if (expFile .eqs. "") then expFile = f$parse(libName, DEFAULT_EXP_FILE) - ";"
+$ if (expFile .eqs. "" -
+      .or. f$parse(expFile,,,"TYPE") .eqs. ".") then -
+    expFile = f$parse(libName, DEFAULT_EXP_FILE) - ";"
 $!
 $ elemList = p3
 $ if (elemList .eqs. "") then elemList = DEFAULT_ELEM_LIST
@@ -761,12 +773,22 @@ $ return  !GOSUB_WRITE_GIT_TAG
 $!-------------------------------
 $GOSUB_WRITE_GIT_BLOB:
 $ dbgtrace "GOSUB_WRITE_GIT_BLOB"
-$!! ARGS: histBlobId,
+$!! ARGS: curHistElem,
+$!!       curHistGen,
+$!!       histBlobId,
 $!!       blobFile
 $!
 $
-$ gitBlobDataSize = (f$file(blobFile, "EOF") - 1) * f$file(blobFile,"BLS") -
-             + f$file(blobFile,"FFB")
+$ blockSize = f$file(blobFile,"BLS")
+$ firstFreeByte = f$file(blobFile,"FFB")
+$
+$ gitBlobDataSize = f$file(blobFile, "EOF") * blockSize
+$ if (firstFreeByte .gt. 0) then -
+    gitBlobDataSize = gitBlobDataSize - blockSize + firstFreeByte
+$
+$ if (gitBlobDataSize .eq. 0) then -
+    logmsg "W|EMPTYFILE: exporting a zero-size generation ",-
+        curHistElem," /GEN=", curHistGen
 $!
 $ !!-- git-fast blob
 $ !!--
@@ -853,10 +875,21 @@ $
 $ g_libPath == f$edit(f$elem(0,CHAR_DBLQUOTE,g_libhistCommand),"TRIM,UPCASE") -
             - "CREATE LIBRARY "
 $!
-$ libDirName = g_libPath - "]" -
-         - (f$parse(g_libPath - "]" + ".-]",,,,"SYNTAX_ONLY") - "].;") - "."
+$ !!-- Get CMS lib name from path (DEV:[LIBNAME] or DEV:[DIR.LIBNAME])
+$ !!-- OR get it from device name when a terminal device (DEV: or DEV:[000000])
+$ !!--
+$ if (g_libPath - "]" .eqs. g_libPath -
+      .or. g_libPath - "[000000]" .nes. g_libPath)
+$ then
+$   libDirName = f$edit(g_libPath, "LOWERCASE") - "[000000]" - ":"
+$ else
+$   libDirName = f$edit(g_libPath, "LOWERCASE") - "]" -
+         - f$edit(f$parse(g_libPath - "]" + ".-]",,,,"SYNTAX_ONLY") -
+           - "000000].;" - "].;", "LOWERCASE") - "000000." - "."
+$ endif
 $
-$ g_lib == f$edit(libDirName,"TRIM,LOWERCASE")
+$ g_lib == f$edit(libDirName,"TRIM")
+$ if (g_lib .eqs. "") then g_lib == "cmslib" !!-- DEFAULT
 $
 $ call GET_SEQTIME "''g_libTime'"
 $ g_libSeqKey == g_seqTime
@@ -909,13 +942,29 @@ $ read/end=ENDDO_DESCGEN  fDescGen line
 $ read/end=ENDDO_DESCGEN  fDescGen line
 $ read/end=ENDDO_DESCGEN  fDescGen line
 $!
+$ g_genIsMultilineRemark == ".FALSE."
+$
 $DO_DESCGEN:
 $   line=""
 $   read/end=ENDDO_DESCGEN  fDescGen line
 $   if (line .eqs. "") then goto NEXT_DESCGEN
 $!
+$   !! -- Truncate multi-line remarks to a single line
+$   !! --
+$   if (g_genIsMultilineRemark)
+$   then
+$     g_genIsMultilineRemark == (f$extr(f$len(line)-1, 1, line) .nes. CHAR_DBLQUOTE)
+$     goto DO_DESCGEN
+$   endif
+$!
 $   call PARSE_GEN_REC
 $   if (g_genIsElem) then elem = g_genElem
+$   if (g_genIsMultilineRemark)
+$   then
+$     logmsg "W|TRUNCATED: multiline remark truncated for generation ",-
+          g_genElem, " /GEN=",g_gen
+$     goto DO_DESCGEN
+$   endif
 $   if (g_gen .eqs. "") then goto NEXT_DESCGEN
 $!
 $   dbgmsg "DBG|DESC:genElem:",g_genElem,"|gen:",g_gen,"|",g_genUser,"|",g_genTime,"|",g_genRemark
@@ -1197,14 +1246,29 @@ $ read/end=ENDDO_ANCGEN  fAncGen line
 $ read/end=ENDDO_ANCGEN  fAncGen line
 $!
 $ genIdx = 0
+$ g_genIsMultilineRemark == ".FALSE."
 $
 $DO_ANCGEN:
 $   line=""
 $   read/end=ENDDO_ANCGEN  fAncGen line
 $   if (line .eqs. "") then goto NEXT_ANCGEN
 $!
+$   !! -- Truncate multi-line remarks to a single line
+$   !! --
+$   if (g_genIsMultilineRemark)
+$   then
+$     g_genIsMultilineRemark == (f$extr(f$len(line)-1, 1, line) .nes. CHAR_DBLQUOTE)
+$     goto DO_ANCGEN
+$   endif
+$!
 $   call PARSE_GEN_REC
 $   if (g_genIsElem) then elem = g_genElem
+$   if (g_genIsMultilineRemark)
+$   then
+$     logmsg "W|TRUNCATED: multiline remark truncated for generation ",-
+          g_genElem, " /GEN=",g_gen
+$     goto DO_ANCGEN
+$   endif
 $   if (g_gen .eqs. "") then goto NEXT_ANCGEN
 $!
 $   dbgmsg "DBG|ANC:genElem:",g_genElem,"|gen:",g_gen,"|",g_genUser,"|",g_genTime,"|",g_genRemark
@@ -1526,6 +1590,7 @@ $ g_gen == ""
 $ g_genTime == ""
 $ g_genUser == ""
 $ g_genRemark == ""
+$ g_genIsMultilineRemark == ".FALSE."
 $
 $ g_genIsElem == ( f$extr(0, 1, genRec) .nes. CHAR_SPACE )
 $!
@@ -1546,6 +1611,8 @@ $ g_genTime == f$elem(2, CHAR_SPACE, xline) -
             + ":" + f$elem(3, CHAR_SPACE, xline)
 $ g_genUser == f$elem(4, CHAR_SPACE, xline)
 $ g_genRemark == f$elem(1, CHAR_DBLQUOTE, xline)
+$
+$ g_genIsMultilineRemark == (f$extr(f$len(genRec)-1, 1, genRec) .nes. CHAR_DBLQUOTE)
 $!
 $EXIT:
 $ exit  !PARSE_GEN_REC

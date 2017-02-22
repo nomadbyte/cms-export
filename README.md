@@ -98,7 +98,7 @@ tests and user-documentation:
   do a logged build (all messages are redirected to a log-file):
 
       define err_output log_output
-      pipe @[-]build clean all test 2>&1 >build.log
+      pipe @[-]build clean all test >build.log 2>&1
 
 
 - On successful completion all tests have passed and the `cms-export` utility
@@ -129,7 +129,7 @@ tests and user-documentation:
   redirect messages to a log-file:
 
       define err_output log_output
-      pipe EXPORTCMS  2>&1 >exportcms.log
+      pipe EXPORTCMS  >exportcms.log 2>&1
 
 
   > __NOTE__: For better use of system resources it is recommended to run export
