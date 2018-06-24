@@ -3,8 +3,8 @@ $ THIS_FILE = f$elem(0,";",f$env("procedure"))
 $ USAGE_ARGS = "[target1[ target2 ...]]"
 $ PRJ_NAME = "XCMS"
 $ THIS_FACILITY = "BUILD''PRJ_NAME'"
-$ VERSION = "0.8.0"
-$ COPYRIGHT = "Copyright (c) 2015, Artur Shepilko, <cms-export@nomadbyte.com>."
+$ VERSION = "0.10.0"
+$ COPYRIGHT = "Copyright (c) 2018, Artur Shepilko, <cms-export@nomadbyte.com>."
 $!---------------------------------------------------------------------------
 $! For Usage -- run with ? (?? for usage details and license)
 $! License listed at the bottom.
@@ -284,7 +284,7 @@ $
 $ type sys$input
 $DECK
 -----------------------------------------------------------------------------
-Copyright (c) 2015, Artur Shepilko, <cms-export@nomadbyte.com>.
+Copyright (c) 2018, Artur Shepilko, <cms-export@nomadbyte.com>.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -2,6 +2,12 @@ cms-export ChangeLog  {#xcmschangelog}
 ====================
 
 
+## 0.10.0 - 2018-06-24
+
+- Bugfixes
+- __ISSUE-FIX__:Long variant names not supported; halt the export process.
+
+
 ## 0.9.0 - 2017-02-21
 
 - Update docs
@@ -10,6 +16,7 @@ cms-export ChangeLog  {#xcmschangelog}
   - Commit remarks are truncated to a single line.
 
 - __ISSUE-FIX__:Blob byte-size is one block off when it's exact block multiple.
+- __ISSUE__:Long variant names not supported; halt the export process.
 
 
 ## 0.8.0 - 2015-01-13
