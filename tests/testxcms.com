@@ -3,8 +3,8 @@ $ THIS_FILE = f$elem(0,";",f$env("procedure"))
 $ USAGE_ARGS = ""
 $ PRJ_NAME = "XCMS"
 $ THIS_FACILITY = "TEST''PRJ_NAME'"
-$ VERSION = "0.8.0"
-$ COPYRIGHT = "Copyright (c) 2015, Artur Shepilko, <cms-export@nomadbyte.com>."
+$ VERSION = "0.10.0"
+$ COPYRIGHT = "Copyright (c) 2018, Artur Shepilko, <cms-export@nomadbyte.com>."
 $!---------------------------------------------------------------------------
 $! For Usage -- run with ? (?? for usage details and license)
 $! License listed at the bottom.
@@ -29,7 +29,7 @@ $
 $ DEFAULT_CMSLIB = "[.testlib]"
 $
 $ DEFAULT_TEST_LIST = "commits classes"
-$ TEST_LIST_commits = "T01 T02 T03 T04 T05 T06 T07 T08 T09 T10" -
+$ TEST_LIST_commits = "T01 T02 T03 T04 T05 T05L T06 T07 T08 T09 T10" -
     + " T11 T12 T13 T14 T15"
 $ TEST_LIST_classes = "T16 T17 T18 T19"
 $
@@ -56,6 +56,7 @@ $
 $!----------------------------------
 $ CHAR_SPACE = " " !!space
 $ CHAR_MINUS = "-" !!minus
+$ CHAR_L = "L"
 $
 $ call RUN_TESTS "''testList'"
 $
@@ -125,6 +126,8 @@ $   groupTest = f$elem(gtid,CHAR_SPACE, groupTestList)
 $   if (groupTest .eqs. CHAR_SPACE) then goto ENDDO_GROUP
 $   if (groupTest .eqs. "") then goto NEXT_GROUP
 $
+$   groupTest = f$edit(groupTest,"UPCASE")
+$
 $   if (f$extr(0,1,groupTest) .eqs. CHAR_MINUS)
 $   then
 $     testsDisabled = testsDisabled + 1
@@ -144,6 +147,12 @@ $DO_TEST:
 $   test = f$elem(tid,CHAR_SPACE, testList)
 $   if (test .eqs. CHAR_SPACE) then test = groupTest
 $   if (test .eqs. "") then goto NEXT_TEST
+$
+$   test = f$edit(test,"UPCASE")
+$
+$   !!-- Disable long variant name tests, when not supported
+$   if (f$edit(f$extr(f$len(test)-1,1,test),"UPCASE") .eqs. CHAR_L  -
+        .and. .not. cmsCanLongVariantNames) then test = CHAR_MINUS + test
 $
 $   if (f$extr(0,1,test) .eqs. CHAR_MINUS)
 $   then
@@ -193,7 +202,12 @@ $ goto EXIT
 
 $!-------------------------------
 $GOSUB_SETUP:
+$ cmsCanLongVariantNames = "F"
+$
 $ logmsg "I|SETUP:", cmsLibName, " ", cmsLib
+$
+$ STS_CMS_MODIFIED_SUCCESS="%X109C8461"
+$
 $ if (f$parse(cmsLib) .eqs. "")
 $ then
 $   create /dir 'cmsLib'
@@ -201,6 +215,15 @@ $   cms create lib 'cmsLib'  !! ODS5: /ext /long
 $ endif
 $
 $ cms set lib 'cmsLib'
+$
+$ set noon
+$ cms modify lib /long_variant_names "" !! needs CMS 4.1 and up
+$ stsCMS=$STATUS
+$ set on
+$
+$ cmsCanLongVariantNames = (stsCMS .eq. STS_CMS_MODIFIED_SUCCESS)
+$ if (.not. cmsCanLongVariantNames) then -
+     logmsg "W|NOLONGVARIANTS: long variant names support requires CMS 4.1 and up"
 $
 $ EXPORTCMS := @BLDROOT:[bin]exportcms-git.com
 $
@@ -432,6 +455,38 @@ $
 $ gosub GOSUB_INIT_EXPORTCMS
 $
 $ gosub GOSUB_TEST_EXPORTCMS
+$
+$ return
+
+
+$!-------------------------------
+$GOSUB_TST_T05L:$ testName = "oneVariant_A_LONG"
+$
+$ testTag = test
+$ if (testName .nes. "") then testTag = "''test'_''testName'"
+$ logmsg "I|TESTING:", testTag
+$
+$ testPassed = "F"
+$
+$BEGIN_CMS_CHANGES:!!-- create a variant generation (long variant name)
+$ create elem1l.txt
+elem1l.txt
+$EOD
+$
+$ cms create elem elem1l.txt "''testTag'"
+$ cms reserve elem1l.txt "''testTag'"
+$ pipe write sys$output "''testTag'" | append sys$input elem1l.txt
+$ cms replace /if elem1l.txt /VAR=A_LONG "''testTag'"
+$
+$END_CMS_CHANGES:
+$
+$ gosub GOSUB_INIT_EXPORTCMS
+$
+$ gosub GOSUB_TEST_EXPORTCMS
+$
+$CLEANUP_CMS_CHANGES:
+$ cms delete elem elem1l.txt /nolog/noconf "''testTag'"
+$ cms delete hist /obj=elem1l.txt /nolog/noconf "''testTag'"
 $
 $ return
 
@@ -990,6 +1045,7 @@ matches the resulting export file to expected output (in [.data] sub-dir).
 DETAILS:
 - Available tests are listed in DEFAULT_TEST_LIST symbol
 - Disabled tests are prefixed with "-" (e.g. "-T05")
+- Tests that use long variant names are marked with "L" (e.g. "T05L")
 - Tests are done sequentially as listed left to right
 - Each test must have a corresponding GOSUB_TST_<test> to execute
 - Listed tests may be ordinary tests or test-groups
@@ -1024,7 +1080,7 @@ $
 $ type sys$input
 $DECK
 -----------------------------------------------------------------------------
-Copyright (c) 2015, Artur Shepilko, <cms-export@nomadbyte.com>.
+Copyright (c) 2018, Artur Shepilko, <cms-export@nomadbyte.com>.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

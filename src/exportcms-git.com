@@ -2,8 +2,8 @@ $!===========================================================================
 $ THIS_FILE = f$elem(0,";",f$env("procedure"))
 $ USAGE_ARGS = "[libPath] [outFile] [elemList] [classList] [classBranchXref]"
 $ THIS_FACILITY = "EXPORTCMS"
-$ VERSION = "0.9.0"
-$ COPYRIGHT = "Copyright (c) 2015, Artur Shepilko, <cms-export@nomadbyte.com>."
+$ VERSION = "0.10.0"
+$ COPYRIGHT = "Copyright (c) 2018, Artur Shepilko, <cms-export@nomadbyte.com>."
 $!---------------------------------------------------------------------------
 $! For Usage -- run with ? (?? for usage details and license)
 $! License listed at the bottom.
@@ -474,11 +474,26 @@ $!
 $     genDif = curHistGen - curHistAncGen
 $     if (genDif .nes. curHistGen)
 $     then
-$       !!-- var must be A-Z
+$       !!-- var must be [A-Z,_]
 $       !!-- NOTE: f$int("T")= f$int("TRUE")= 1)
+$       !!-- NOTE2: handle long variant names (up to 255 char)
+$       !!-- loop until first digit or end
 $!
-$       var = f$edit(f$extr(0,1,genDif) , "UPCASE")
-$       if (var .nes. "T" .and. f$int(var) .ne. 0) then var = ""
+$       len = f$len(genDif)
+$       idx = 0
+$DO_VAR:
+$       if (f$extr(idx, 1, genDif) .nes. "T" -
+            .and. f$int(f$extr(idx, 1, genDif)) .ne. 0) then goto ENDDO_VAR
+$       idx = idx + 1
+$       if (idx .ge. len)  !!-- varN
+$       then
+$         !!-- ERROR: invalid variant generation
+$         goto EXIT
+$       endif
+$       goto DO_VAR
+$ENDDO_VAR:
+$
+$       var = f$edit(f$extr(0,idx,genDif) , "UPCASE")
 $     endif
 $
 $     if (var .nes. "")
@@ -1753,7 +1768,7 @@ $
 $ type sys$input
 $DECK
 -----------------------------------------------------------------------------
-Copyright (c) 2015, Artur Shepilko, <cms-export@nomadbyte.com>.
+Copyright (c) 2018, Artur Shepilko, <cms-export@nomadbyte.com>.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
