@@ -2,6 +2,14 @@ cms-export ChangeLog  {#xcmschangelog}
 ====================
 
 
+## 0.11.0 - 2018-11-02
+
+- Bugfixes
+- __ISSUE-FIX__:Handling of multi-line generation/commit remarks is incorrect;
+  This leads to the resp. generation missing from the resulting `git-fast` file.
+  - Commit remarks are truncated to `REMARK_MAXLEN=130`.
+
+
 ## 0.10.0 - 2018-06-24
 
 - Bugfixes
