@@ -2,7 +2,7 @@ $!===========================================================================
 $ THIS_FILE = f$elem(0,";",f$env("procedure"))
 $ USAGE_ARGS = "[libPath] [outFile] [elemList] [classList] [classBranchXref]"
 $ THIS_FACILITY = "EXPORTCMS"
-$ VERSION = "0.10.0"
+$ VERSION = "0.11.0"
 $ COPYRIGHT = "Copyright (c) 2018, Artur Shepilko, <cms-export@nomadbyte.com>."
 $!---------------------------------------------------------------------------
 $! For Usage -- run with ? (?? for usage details and license)
@@ -957,31 +957,24 @@ $ read/end=ENDDO_DESCGEN  fDescGen line
 $ read/end=ENDDO_DESCGEN  fDescGen line
 $ read/end=ENDDO_DESCGEN  fDescGen line
 $!
-$ g_genIsMultilineRemark == ".FALSE."
 $
 $DO_DESCGEN:
 $   line=""
 $   read/end=ENDDO_DESCGEN  fDescGen line
 $   if (line .eqs. "") then goto NEXT_DESCGEN
 $!
-$   !! -- Truncate multi-line remarks to a single line
-$   !! --
-$   if (g_genIsMultilineRemark)
-$   then
-$     g_genIsMultilineRemark == (f$extr(f$len(line)-1, 1, line) .nes. CHAR_DBLQUOTE)
-$     goto DO_DESCGEN
-$   endif
-$!
 $   call PARSE_GEN_REC
-$   if (g_genIsElem) then elem = g_genElem
-$   if (g_genIsMultilineRemark)
-$   then
-$     logmsg "W|TRUNCATED: multiline remark truncated for generation ",-
-          g_genElem, " /GEN=",g_gen
-$     goto DO_DESCGEN
-$   endif
+$   if (g_genGotNextElem) then elem = g_genElem
+$   if (.not. g_genGotRec) then goto NEXT_DESCGEN
 $   if (g_gen .eqs. "") then goto NEXT_DESCGEN
 $!
+$   if (g_genIsTruncated)
+$   then
+$     logmsg "W|TRUNCATED: remark truncated for generation ",-
+        g_genElem, " /GEN=",g_gen
+$   endif
+$
+$GOT_GEN:
 $   dbgmsg "DBG|DESC:genElem:",g_genElem,"|gen:",g_gen,"|",g_genUser,"|",g_genTime,"|",g_genRemark
 $
 $   !!-- histSeqKey: yyyymmddhhmmsstt
@@ -1261,31 +1254,17 @@ $ read/end=ENDDO_ANCGEN  fAncGen line
 $ read/end=ENDDO_ANCGEN  fAncGen line
 $!
 $ genIdx = 0
-$ g_genIsMultilineRemark == ".FALSE."
 $
 $DO_ANCGEN:
 $   line=""
 $   read/end=ENDDO_ANCGEN  fAncGen line
-$   if (line .eqs. "") then goto NEXT_ANCGEN
-$!
-$   !! -- Truncate multi-line remarks to a single line
-$   !! --
-$   if (g_genIsMultilineRemark)
-$   then
-$     g_genIsMultilineRemark == (f$extr(f$len(line)-1, 1, line) .nes. CHAR_DBLQUOTE)
-$     goto DO_ANCGEN
-$   endif
 $!
 $   call PARSE_GEN_REC
-$   if (g_genIsElem) then elem = g_genElem
-$   if (g_genIsMultilineRemark)
-$   then
-$     logmsg "W|TRUNCATED: multiline remark truncated for generation ",-
-          g_genElem, " /GEN=",g_gen
-$     goto DO_ANCGEN
-$   endif
+$   if (g_genGotNextElem) then elem = g_genElem
+$   if (.not. g_genGotRec) then goto NEXT_ANCGEN
 $   if (g_gen .eqs. "") then goto NEXT_ANCGEN
 $!
+$GOT_ANCGEN:
 $   dbgmsg "DBG|ANC:genElem:",g_genElem,"|gen:",g_gen,"|",g_genUser,"|",g_genTime,"|",g_genRemark
 $!
 $   if (genIdx .lt. ancIdx)
@@ -1601,23 +1580,79 @@ $ !dbgmsg "DBG|PARSE_GEN_REC:",genRec,"|"
 $!
 $ !!-- init retvalues
 $ !!--
-$ g_gen == ""
-$ g_genTime == ""
-$ g_genUser == ""
-$ g_genRemark == ""
-$ g_genIsMultilineRemark == ".FALSE."
-$
-$ g_genIsElem == ( f$extr(0, 1, genRec) .nes. CHAR_SPACE )
-$!
-$ if (genRec .eqs. "") then goto EXIT
-$!
-$ if (g_genIsElem)
+$ if ("''g_genGotNextElem'" .eqs. "")
 $ then
-$   g_genElem == f$edit(genRec,"TRIM,LOWERCASE")
-$   goto EXIT
+$   g_genGotNextElem == "F"
+$   g_genElem == ""
+$   g_genGotRec == "T"
 $ endif
-$!
-$ xline = f$edit(genRec, "COMPRESS")
+$
+$ if (g_genGotRec .or. g_genGotNextElem)
+$ then
+$   g_genGotNextElem == "F"
+$   g_genGotRec == "F"
+$   g_gen == ""
+$   g_genTime == ""
+$   g_genUser == ""
+$   g_genRemark == ""
+$   g_genIsTruncated == "F"
+$   g_genRecBuf == ""
+$   g_genRecBufLen == 0
+$ endif
+$
+$ if (genRec .eqs. "") then goto REC_EMPTY
+$ if (f$extr(0, 1, genRec) .nes. CHAR_SPACE ) then goto REC_ELEM
+$ goto REC_GEN
+$
+$REC_EMPTY:
+$ goto EXIT
+$
+$REC_ELEM:
+$ g_genElem == f$edit(genRec,"TRIM,LOWERCASE")
+$ g_genGotNextElem == (g_genElem .nes. "")
+$ g_genGotRec == "F"
+$ if (.not. g_genGotNextElem) then goto ERROR
+$ goto EXIT
+$
+$REC_GEN:
+$ if (g_genElem .eqs. "") then goto ERROR
+$
+$ !!-- Gen record may be wrapped on a long Remark ("remark").
+$ !!-- Max length of a Gen record is 130 chars, but it's wrapped at whole words.
+$ !!-- wrapped chunks are offset with 13 spaces.
+$ !!-- Join (using a space) all the chunks (until dbl-quote terminated)
+$ !!-- into a whole Gen record, then parse it.
+$ !!-- Truncate the remark to the size of a whole Gen record.
+$ !!-- When remark is too long it can still trip DCL error ('help /mess TKNOVF'),
+$ !!-- in such case try to decrease the REMARK_MAXLEN.
+$ !!--
+$ GEN_REC_MAXLEN = 130
+$ GEN_RECBUF_MAXLEN = 1024 - GEN_REC_MAXLEN
+$ WRAPPEDLINE_OFFSET = 13
+$ REMARK_MAXLEN = GEN_REC_MAXLEN
+$
+$ genRecLen = f$len(genRec)
+$ if (f$extr(WRAPPEDLINE_OFFSET-1, 1, genRec) .eqs. CHAR_SPACE -
+      .and. f$edit(f$extr(0,WRAPPEDLINE_OFFSET, genRec), "COMPRESS") .eqs. CHAR_SPACE)
+$ then
+$   genRec = f$extr(WRAPPEDLINE_OFFSET, genRecLen, genRec)
+$   genRecLen = genRecLen - WRAPPEDLINE_OFFSET
+$ endif
+$ hasEndingQuote = (genRecLen .gt. 0 -
+                    .and. f$extr(genRecLen-1, 1, genRec) .eqs. CHAR_DBLQUOTE)
+$ if ((g_genRecBufLen + 1 + genRecLen) .ge. GEN_RECBUF_MAXLEN)
+$ then
+$   genRecLen = GEN_RECBUF_MAXLEN - g_genRecBufLen - 1
+$   genRec = f$extr(0, genRecLen, genRec)
+$   g_genIsTruncated == "T"
+$ endif
+$ g_genRecBuf == g_genRecBuf + CHAR_SPACE + genRec
+$ g_genRecBufLen == g_genRecBufLen + 1 + genRecLen
+$
+$ g_genGotRec == (hasEndingQuote)
+$ if (.not. g_genGotRec) then goto EXIT
+$
+$ xline = f$edit(g_genRecBuf, "COMPRESS")
 $!
 $ g_gen == f$elem(1, CHAR_SPACE, xline)
 $ if (g_gen .eqs. "") then goto EXIT
@@ -1625,12 +1660,30 @@ $
 $ g_genTime == f$elem(2, CHAR_SPACE, xline) -
             + ":" + f$elem(3, CHAR_SPACE, xline)
 $ g_genUser == f$elem(4, CHAR_SPACE, xline)
-$ g_genRemark == f$elem(1, CHAR_DBLQUOTE, xline)
 $
-$ g_genIsMultilineRemark == (f$extr(f$len(genRec)-1, 1, genRec) .nes. CHAR_DBLQUOTE)
+$ offset = f$loc(CHAR_DBLQUOTE, g_genRecBuf)+1
+$ endPos = g_genRecBufLen
+$ if (hasEndingQuote) then endPos = g_genRecBufLen-1
+$ len = endPos - offset
+$ if (len .gt. REMARK_MAXLEN)
+$ then
+$    len = REMARK_MAXLEN
+$    g_genIsTruncated == "T"
+$ endif
+$ remark = f$extr(offset, len, g_genRecBuf)
+$ g_genRemark == remark
+$
 $!
 $EXIT:
+$ if (g_genGotRec)
+$ then
+$   g_genRecBuf == ""
+$   g_genRecBufLen == 0
+$ endif
 $ exit  !PARSE_GEN_REC
+
+$ERROR:
+$ exit 4
 $endsubroutine
 
 

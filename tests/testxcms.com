@@ -3,7 +3,7 @@ $ THIS_FILE = f$elem(0,";",f$env("procedure"))
 $ USAGE_ARGS = ""
 $ PRJ_NAME = "XCMS"
 $ THIS_FACILITY = "TEST''PRJ_NAME'"
-$ VERSION = "0.10.0"
+$ VERSION = "0.11.0"
 $ COPYRIGHT = "Copyright (c) 2018, Artur Shepilko, <cms-export@nomadbyte.com>."
 $!---------------------------------------------------------------------------
 $! For Usage -- run with ? (?? for usage details and license)
@@ -29,7 +29,7 @@ $
 $ DEFAULT_CMSLIB = "[.testlib]"
 $
 $ DEFAULT_TEST_LIST = "commits classes"
-$ TEST_LIST_commits = "T01 T02 T03 T04 T05 T05L T06 T07 T08 T09 T10" -
+$ TEST_LIST_commits = "T01 T02 T03 T04 T04_1 T05 T05L T06 T07 T08 T09 T10" -
     + " T11 T12 T13 T14 T15"
 $ TEST_LIST_classes = "T16 T17 T18 T19"
 $
@@ -436,6 +436,60 @@ $ return
 
 
 $!-------------------------------
+$GOSUB_TST_T04_1:$ testName = "oneElementLongRemark"
+$
+$ testTag = test
+$ if (testName .nes. "") then testTag = "''test'_''testName'"
+$ logmsg "I|TESTING:", testTag
+$
+$ testPassed = "F"
+$
+$BEGIN_CMS_CHANGES:!!-- a long comment remark on replace
+$ create elem1lr.txt
+elem1lr.txt
+$EOD
+$
+$ cms create elem elem1lr.txt "''testTag'"
+$ cms reserve elem1lr.txt "''testTag'"
+$ pipe write sys$output "''testTag'-1" | append sys$input elem1lr.txt
+$ longRemark = -
+    "123456789 123456789 123456789 123456789 123456789 " -
+    + "123456789 123456789 123456789 123456789 1234567890"
+$ cms replace /if elem1lr.txt "''longRemark'"
+$ gosub GOSUB_WAIT
+$
+$ cms reserve elem1lr.txt "''testTag'"
+$ pipe write sys$output "''testTag'-2" | append sys$input elem1lr.txt
+$ longRemark = -
+    "123456789|123456789|123456789|123456789|123456789|" -
+    + "123456789|123456789|123456789|123456789|1234567890"
+$ cms replace /if elem1lr.txt "''longRemark'"
+$ gosub GOSUB_WAIT
+$
+$ cms reserve elem1lr.txt "''testTag'"
+$ pipe write sys$output "''testTag'-3" | append sys$input elem1lr.txt
+$ longRemark = -
+    "123456789 123456789 123456789 123456789 123456789 " -
+    + "123456789 123456789 123456789 123456789 123456789 " -
+    + "123456789 123456789 123456789 123456789 123456789 " -
+    + "123456789 123456789 123456789 123456789 1234567890"
+$ cms replace /if elem1lr.txt "''longRemark'"
+$ gosub GOSUB_WAIT
+$
+$END_CMS_CHANGES:
+$
+$ gosub GOSUB_INIT_EXPORTCMS
+$
+$ gosub GOSUB_TEST_EXPORTCMS
+$
+$CLEANUP_CMS_CHANGES:
+$ cms delete elem elem1lr.txt /nolog/noconf "''testTag'"
+$ cms delete hist /obj=elem1lr.txt /nolog/noconf /out=NL: "''testTag'"
+$
+$ return
+
+
+$!-------------------------------
 $GOSUB_TST_T05:$ testName = "oneVariant_A"
 $
 $ testTag = test
@@ -486,7 +540,7 @@ $ gosub GOSUB_TEST_EXPORTCMS
 $
 $CLEANUP_CMS_CHANGES:
 $ cms delete elem elem1l.txt /nolog/noconf "''testTag'"
-$ cms delete hist /obj=elem1l.txt /nolog/noconf "''testTag'"
+$ cms delete hist /obj=elem1l.txt /nolog/noconf /out=NL: "''testTag'"
 $
 $ return
 

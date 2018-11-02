@@ -3,7 +3,7 @@ $ THIS_FILE = f$elem(0,";",f$env("procedure"))
 $ USAGE_ARGS = "[target1[ target2 ...]]"
 $ PRJ_NAME = "XCMS"
 $ THIS_FACILITY = "BUILD''PRJ_NAME'"
-$ VERSION = "0.10.0"
+$ VERSION = "0.11.0"
 $ COPYRIGHT = "Copyright (c) 2018, Artur Shepilko, <cms-export@nomadbyte.com>."
 $!---------------------------------------------------------------------------
 $! For Usage -- run with ? (?? for usage details and license)

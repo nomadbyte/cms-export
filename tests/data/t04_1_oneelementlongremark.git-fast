@@ -1,0 +1,140 @@
+commit refs/heads/master
+mark :1
+committer HOMEUSER <homeuser> 1541100694 +0000
+data 22
+initial empty check-in
+deleteall
+
+blob
+mark :4
+data 10
+elem1.txt
+
+commit refs/heads/master
+mark :3
+committer HOMEUSER <homeuser> 1541100694 +0000
+data 25
+(elem1.txt;1):T02_oneElem
+from :1
+M 100644 :4 elem1.txt
+
+blob
+mark :6
+data 21
+elem1.txt
+T03_genTwo
+
+commit refs/heads/master
+mark :5
+committer HOMEUSER <homeuser> 1541100695 +0000
+data 24
+(elem1.txt;2):T03_genTwo
+from :3
+M 100644 :6 elem1.txt
+
+blob
+mark :8
+data 43
+elem1.txt
+T03_genTwo
+T04_oneElemMainline:1
+
+commit refs/heads/master
+mark :7
+committer HOMEUSER <homeuser> 1541100696 +0000
+data 35
+(elem1.txt;3):T04_oneElemMainline:1
+from :5
+M 100644 :8 elem1.txt
+
+blob
+mark :10
+data 65
+elem1.txt
+T03_genTwo
+T04_oneElemMainline:1
+T04_oneElemMainline:2
+
+commit refs/heads/master
+mark :9
+committer HOMEUSER <homeuser> 1541100698 +0000
+data 35
+(elem1.txt;4):T04_oneElemMainline:2
+from :7
+M 100644 :10 elem1.txt
+
+blob
+mark :12
+data 87
+elem1.txt
+T03_genTwo
+T04_oneElemMainline:1
+T04_oneElemMainline:2
+T04_oneElemMainline:3
+
+commit refs/heads/master
+mark :11
+committer HOMEUSER <homeuser> 1541100699 +0000
+data 35
+(elem1.txt;5):T04_oneElemMainline:3
+from :9
+M 100644 :12 elem1.txt
+
+blob
+mark :14
+data 12
+elem1lr.txt
+
+commit refs/heads/master
+mark :13
+committer HOMEUSER <homeuser> 1541100702 +0000
+data 42
+(elem1lr.txt;1):T04_1_oneElementLongRemark
+from :11
+M 100644 :14 elem1lr.txt
+
+blob
+mark :16
+data 41
+elem1lr.txt
+T04_1_oneElementLongRemark-1
+
+commit refs/heads/master
+mark :15
+committer HOMEUSER <homeuser> 1541100702 +0000
+data 116
+(elem1lr.txt;2):123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 1234567890
+from :13
+M 100644 :16 elem1lr.txt
+
+blob
+mark :18
+data 70
+elem1lr.txt
+T04_1_oneElementLongRemark-1
+T04_1_oneElementLongRemark-2
+
+commit refs/heads/master
+mark :17
+committer HOMEUSER <homeuser> 1541100703 +0000
+data 116
+(elem1lr.txt;3):123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|1234567890
+from :15
+M 100644 :18 elem1lr.txt
+
+blob
+mark :20
+data 99
+elem1lr.txt
+T04_1_oneElementLongRemark-1
+T04_1_oneElementLongRemark-2
+T04_1_oneElementLongRemark-3
+
+commit refs/heads/master
+mark :19
+committer HOMEUSER <homeuser> 1541100704 +0000
+data 146
+(elem1lr.txt;4):123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 
+from :17
+M 100644 :20 elem1lr.txt
+
